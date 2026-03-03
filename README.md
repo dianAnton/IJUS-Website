@@ -1,7 +1,7 @@
 # ⛪ IJUS - Iglesia Jesucristo Único Salvador
 
 <div align="center">
-<img width="80%" alt="IJUS Website Cover" src="visuals/public/Nuestra Iglesia.jpg" />
+<img width="80%" alt="IJUS Website Cover" src="visuals/public/ijus-image-github.png" />
 
 ![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)
@@ -106,10 +106,3 @@ The system strictly separates concerns into 3 layers:
     npm run dev
     ```
 
-## 📸 Visual Preview
-
-| **Landing Page** | **Subscription Flow** |
-|:---:|:---:|
-| *(Welcome Section)* | *(Contact Modal)* |
-| <img width="95%" alt="Hero Section" src="visuals/public/Nuestra Iglesia.jpg" /> | <img width="85%" alt="Subscription" src="visuals/public/ijus-noticias-eventos-placeholder.png" />|
-|  |  |
