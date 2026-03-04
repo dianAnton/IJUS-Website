@@ -12,7 +12,8 @@ export default function SelectedWork() {
       const { data, error } = await supabase
         .from('event')
         .select('*')
-        .order('date', { ascending: true });
+        .order('date', { ascending: true })
+        .limit(3);
 
       if (error) {
         console.error('Error fetching events:', error);
