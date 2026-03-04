@@ -1,5 +1,6 @@
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { HoverText } from './HoverLink';
 import { cn } from '../utils/cn';
 
@@ -8,9 +9,14 @@ export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  const { pathname } = useLocation();
+  const isLightPage = pathname === '/novedades';
+
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrolled(latest > 50);
   });
+
+  const isDarkText = scrolled || isOpen || isLightPage;
 
   // Prevent scroll when mobile menu is open
   useEffect(() => {
@@ -28,7 +34,7 @@ export const Navbar = () => {
       <motion.nav
         className={cn(
           "fixed top-0 left-0 right-0 z-50 px-6 md:px-12 py-4 transition-colors duration-300",
-          (scrolled || isOpen) ? "bg-white text-dark shadow-sm" : "bg-transparent text-white"
+          isDarkText ? "bg-white text-dark shadow-sm" : "bg-transparent text-white"
         )}
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -36,9 +42,9 @@ export const Navbar = () => {
       >
         <div className="w-full flex justify-between items-center">
           <div className="hidden lg:flex gap-8 items-center font-medium text-sm uppercase tracking-widest flex-1">
-            <a href="#que-esperar"><HoverText>Visítanos</HoverText></a>
-            <a href="#equipo"><HoverText>Conócenos</HoverText></a>
-            <a href="#eventos"><HoverText>Eventos</HoverText></a>
+            <a href="/#que-esperar"><HoverText>Visítanos</HoverText></a>
+            <a href="/#equipo"><HoverText>Conócenos</HoverText></a>
+            <a href="/#eventos"><HoverText>Eventos</HoverText></a>
           </div>
 
           <a href="/" className="font-serif italic text-3xl font-bold tracking-wider flex-shrink-0 text-center relative z-50">
@@ -46,9 +52,9 @@ export const Navbar = () => {
           </a>
 
           <div className="hidden lg:flex flex-1 justify-end items-center gap-4">
-            <a href="#contacto" className={cn(
+            <a href="/#contacto" className={cn(
               "flex items-center gap-2 border rounded-full px-6 py-2.5 transition-colors text-sm uppercase tracking-widest",
-              scrolled ? "border-dark/20 hover:bg-dark hover:text-white" : "border-white/30 hover:bg-white hover:text-dark"
+              isDarkText ? "border-dark/20 hover:bg-dark hover:text-white" : "border-white/30 hover:bg-white hover:text-dark"
             )}>
               <HoverText>Planear Visita</HoverText>
             </a>
@@ -62,12 +68,12 @@ export const Navbar = () => {
           >
             <span className={cn(
               "w-6 h-0.5 block transition-all duration-300",
-              (scrolled || isOpen) ? "bg-dark" : "bg-white",
+              isDarkText ? "bg-dark" : "bg-white",
               isOpen ? "rotate-45 translate-y-2" : ""
             )}></span>
             <span className={cn(
               "w-6 h-0.5 block transition-all duration-300",
-              (scrolled || isOpen) ? "bg-dark" : "bg-white",
+              isDarkText ? "bg-dark" : "bg-white",
               isOpen ? "-rotate-45" : ""
             )}></span>
           </button>
@@ -86,7 +92,7 @@ export const Navbar = () => {
           >
             <div className="flex flex-col gap-8 items-center text-dark text-2xl font-serif">
               <motion.a
-                href="#que-esperar"
+                href="/#que-esperar"
                 onClick={toggleMenu}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -96,7 +102,7 @@ export const Navbar = () => {
                 Visítanos
               </motion.a>
               <motion.a
-                href="#equipo"
+                href="/#equipo"
                 onClick={toggleMenu}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -106,7 +112,7 @@ export const Navbar = () => {
                 Conócenos
               </motion.a>
               <motion.a
-                href="#eventos"
+                href="/#eventos"
                 onClick={toggleMenu}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -117,7 +123,7 @@ export const Navbar = () => {
               </motion.a>
 
               <motion.a
-                href="#contacto"
+                href="/#contacto"
                 onClick={toggleMenu}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}

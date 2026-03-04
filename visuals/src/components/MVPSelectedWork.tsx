@@ -27,7 +27,7 @@ export default function SelectedWork() {
               title: evt.title,
               category: days[d.getDay()],
               year: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              image: '/ijus-noticias-eventos-placeholder.png'
+              image: evt.image_url || '/ijus-noticias-eventos-placeholder.png'
             };
           });
           setEvents(formattedEvents);
@@ -112,7 +112,7 @@ export default function SelectedWork() {
                     hover: { scale: 1.02 }
                   }}
                   transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-[2.5rem] lg:text-[3.5rem] xl:text-[5.5rem] leading-none font-serif italic tracking-tight whitespace-nowrap truncate"
+                  className="text-4xl lg:text-5xl xl:text-6xl leading-tight font-serif italic tracking-tight whitespace-nowrap truncate pb-2"
                 >
                   {event.title}
                 </motion.h3>
@@ -140,10 +140,10 @@ export default function SelectedWork() {
               </div>
 
               {/* Meta info (Category, Year) - absolutely positioned on the sides */}
-              <div className="absolute left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 font-sans text-xl font-light">
+              <div className="absolute left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 font-sans text-xl font-light z-40">
                 {event.category}
               </div>
-              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 font-sans text-xl font-light text-right">
+              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 font-sans text-xl font-light text-right z-40">
                 {event.year}
               </div>
             </motion.a>
@@ -166,7 +166,7 @@ export default function SelectedWork() {
               <div className="absolute inset-0 bg-white origin-bottom scale-y-0 group-hover:scale-y-100 transition-transform duration-500 ease-out -z-10" />
 
               <div className="flex flex-col items-center justify-center mb-8 text-center group-hover:text-primary transition-colors duration-500 px-4">
-                <h3 className="text-[2.5rem] sm:text-[3.5rem] leading-tight font-serif italic tracking-tight break-words hyphens-auto">{event.title}</h3>
+                <h3 className="text-3xl sm:text-4xl leading-tight font-serif italic tracking-tight break-words hyphens-auto pb-2">{event.title}</h3>
                 <span className="text-xs opacity-70 uppercase tracking-widest mt-4">
                   {event.category} - {event.year}
                 </span>

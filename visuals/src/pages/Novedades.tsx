@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
 
 const RevealText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
@@ -16,13 +16,13 @@ const RevealText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
     );
 };
 
-const ProjectItem = ({ event }: { event: any }) => {
+const ProjectItem: React.FC<{ event: any, onSelectImage: (img: string) => void }> = ({ event, onSelectImage }) => {
     return (
         <motion.div
             className="group relative cursor-pointer"
             initial="initial"
             whileHover="hover"
-            onClick={() => window.location.hash = `#visit`}
+            onClick={() => onSelectImage(event.image)}
         >
             {/* Top Border Line */}
             <motion.div
@@ -46,7 +46,7 @@ const ProjectItem = ({ event }: { event: any }) => {
 
             <div className="relative z-10 grid grid-cols-12 gap-4 md:gap-8 items-end px-4 md:px-8 py-8 md:py-12 transition-colors duration-500 group-hover:text-white">
                 <div className="col-span-8 md:col-span-6 flex items-center h-16 md:h-20">
-                    <h2 className="text-[2rem] sm:text-[3rem] md:text-[4.5rem] leading-none font-serif italic tracking-tight shrink-0 truncate max-w-full">{event.title}</h2>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight font-serif italic tracking-tight shrink-0 truncate max-w-full pb-2">{event.title}</h2>
                     <motion.div
                         className="h-20 rounded-lg overflow-hidden origin-left shrink-0 hidden md:block"
                         variants={{
@@ -59,15 +59,15 @@ const ProjectItem = ({ event }: { event: any }) => {
                     </motion.div>
                 </div>
 
-                <div className="hidden md:block col-span-2 pb-1">
+                <div className="hidden md:block col-span-2 pb-1 relative z-20">
                     <p className="text-lg font-medium">{event.category}</p>
                 </div>
 
-                <div className="hidden md:block col-span-2 pb-1 text-right">
+                <div className="hidden md:block col-span-2 pb-1 text-right relative z-20">
                     <p className="text-lg font-medium">{event.dateFormatted}</p>
                 </div>
 
-                <div className="col-span-4 md:col-span-2 pb-1 flex flex-col items-end">
+                <div className="col-span-4 md:col-span-2 pb-1 flex flex-col items-end relative z-20">
                     <p className="text-sm sm:text-lg font-medium md:hidden text-right">{event.dateFormatted}</p>
                     <span className="font-semibold mb-1 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">Ubicación</span>
                     <span className="text-sm md:text-lg font-medium leading-tight text-right hidden md:block group-hover:text-white/80">{event.location}</span>
@@ -80,6 +80,7 @@ const ProjectItem = ({ event }: { event: any }) => {
 export default function Novedades() {
     const [events, setEvents] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     useLayoutEffect(() => {
         window.scrollTo(0, 0);
@@ -155,7 +156,7 @@ export default function Novedades() {
 
                 <section className="flex flex-col max-w-[90rem] mx-auto">
                     {events.length > 0 ? events.map((event, index) => (
-                        <ProjectItem key={index} event={event} />
+                        <ProjectItem key={index} event={event} onSelectImage={setSelectedImage} />
                     )) : (
                         !loading && (
                             <div className="py-20 text-center text-dark/50 font-light">
@@ -176,17 +177,32 @@ export default function Novedades() {
                     )}
                 </section>
 
-                <div className="flex justify-center py-32">
-                    <motion.div
-                        className="w-32 h-32 rounded-full border-[3px] border-primary flex items-center justify-center"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                    >
-                        <div className="w-24 h-24 rounded-full border-[2px] border-primary/50 flex items-center justify-center">
-                            <div className="w-16 h-16 rounded-full border border-primary/30" />
-                        </div>
-                    </motion.div>
-                </div>
+                {/* Lightbox Modal */}
+                <AnimatePresence>
+                    {selectedImage && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSelectedImage(null)}
+                            className="fixed inset-0 z-[100] flex items-center justify-center bg-dark/80 backdrop-blur-md p-4 md:p-12 cursor-pointer"
+                        >
+                            <motion.img
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                                src={selectedImage}
+                                alt="Evento Expandido"
+                                className="max-w-full max-h-full rounded-2xl shadow-2xl object-contain"
+                            />
+                            {/* Close button */}
+                            <button className="absolute top-6 right-6 text-white bg-black/40 hover:bg-black/80 rounded-full p-3 backdrop-blur-sm transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </main>
         </div>
     );
