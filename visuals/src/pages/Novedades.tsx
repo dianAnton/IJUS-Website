@@ -6,6 +6,7 @@ const RevealText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
     return (
         <div className="overflow-hidden">
             <motion.div
+                className="pr-4 pb-2"
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay }}
