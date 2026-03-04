@@ -19,7 +19,7 @@ const RevealText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
 const ProjectItem: React.FC<{ event: any, onSelectImage: (img: string) => void }> = ({ event, onSelectImage }) => {
     return (
         <motion.div
-            className="group relative cursor-pointer"
+            className="group relative cursor-pointer border-b md:border-none border-primary/20 md:border-transparent pb-8 md:pb-0"
             initial="initial"
             whileHover="hover"
             onClick={() => onSelectImage(event.image)}
@@ -130,7 +130,7 @@ export default function Novedades() {
             />
 
             <main className="pb-20">
-                <section className="px-6 md:px-12 mb-20 md:mb-32 max-w-[90rem] mx-auto">
+                <section className="px-6 md:px-12 mb-20 md:mb-32 max-w-[120rem] mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
                         <div className="md:col-span-8 flex flex-col items-start gap-4">
                             <span className="text-primary font-semibold uppercase tracking-widest text-sm">Calendario General</span>
@@ -153,7 +153,7 @@ export default function Novedades() {
                     </div>
                 </section>
 
-                <section className="flex flex-col max-w-[90rem] mx-auto">
+                <section className="flex flex-col max-w-[120rem] mx-auto">
                     {events.length > 0 ? events.map((event, index) => (
                         <ProjectItem key={index} event={event} onSelectImage={setSelectedImage} />
                     )) : (

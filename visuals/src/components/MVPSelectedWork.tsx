@@ -65,7 +65,7 @@ export default function SelectedWork() {
 
   return (
     <section className="bg-primary text-white py-24 px-6 md:px-12 w-full min-h-screen font-sans overflow-hidden" id="eventos">
-      <div className="max-w-[90rem] mx-auto">
+      <div className="max-w-[120rem] mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-start justify-between mb-24 gap-8">
           <h2 className="text-5xl md:text-[4.5rem] font-medium tracking-tight flex items-start">
@@ -105,7 +105,7 @@ export default function SelectedWork() {
               />
 
               {/* Title & Inline Image */}
-              <div className="flex items-center justify-center relative z-30 px-24 lg:px-40 xl:px-48 max-w-full">
+              <div className="flex items-center justify-center relative z-30 px-4 md:px-12 lg:px-24 max-w-full w-full">
                 <motion.h3
                   variants={{
                     initial: { scale: 1 },
