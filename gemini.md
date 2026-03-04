@@ -18,6 +18,7 @@
     "description": "text",
     "date": "datetime",
     "location": "string (default: Constantino 104, Santiago)",
+    "image_url": "text (optional)",
     "created_by": "uuid (admin_id)"
   },
   "Notice": {

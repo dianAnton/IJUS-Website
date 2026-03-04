@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
+import { Link } from 'react-router-dom';
 
 export default function SelectedWork() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -182,6 +183,17 @@ export default function SelectedWork() {
             </a>
           ))}
 
+        </div>
+
+        {/* View All Button */}
+        <div className="mt-16 md:mt-24 flex justify-center">
+          <Link
+            to="/novedades"
+            className="group relative inline-flex items-center gap-3 bg-white text-primary px-8 py-4 rounded-full font-serif italic text-xl md:text-2xl hover:bg-light transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1"
+          >
+            <span>Ver todas las novedades</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70 group-hover:translate-x-1 transition-transform"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </Link>
         </div>
       </div>
 
