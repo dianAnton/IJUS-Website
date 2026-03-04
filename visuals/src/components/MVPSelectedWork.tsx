@@ -120,10 +120,10 @@ export default function SelectedWork() {
                 <motion.div
                   variants={{
                     initial: { width: 0, opacity: 0, marginLeft: 0 },
-                    hover: { width: 'var(--hover-img-w, 240px)', opacity: 1, marginLeft: 'var(--hover-img-ml, 1.5rem)' }
+                    hover: { width: 'var(--hover-img-w, 180px)', opacity: 1, marginLeft: 'var(--hover-img-ml, 1.5rem)' }
                   }}
                   transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="overflow-hidden rounded-xl flex-shrink-0 lg:[--hover-img-w:240px] xl:[--hover-img-w:320px] lg:[--hover-img-ml:1.5rem] xl:[--hover-img-ml:2rem]"
+                  className="overflow-hidden rounded-xl flex-shrink-0 lg:[--hover-img-w:160px] xl:[--hover-img-w:220px] lg:[--hover-img-ml:1.5rem] xl:[--hover-img-ml:2rem]"
                 >
                   <motion.img
                     variants={{
@@ -133,7 +133,7 @@ export default function SelectedWork() {
                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                     src={event.image}
                     alt={event.title}
-                    className="w-[var(--hover-img-w,240px)] h-[160px] xl:h-[220px] object-cover rounded-xl max-w-none shadow-2xl"
+                    className="w-[var(--hover-img-w,180px)] h-[100px] xl:h-[140px] object-cover rounded-xl max-w-none shadow-2xl"
                     referrerPolicy="no-referrer"
                   />
                 </motion.div>

@@ -44,33 +44,32 @@ const ProjectItem: React.FC<{ event: any, onSelectImage: (img: string) => void }
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             />
 
-            <div className="relative z-10 grid grid-cols-12 gap-4 md:gap-8 items-end px-4 md:px-8 py-8 md:py-12 transition-colors duration-500 group-hover:text-white">
-                <div className="col-span-8 md:col-span-6 flex items-center h-16 md:h-20">
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight font-serif italic tracking-tight shrink-0 truncate max-w-full pb-2">{event.title}</h2>
-                    <motion.div
-                        className="h-20 rounded-lg overflow-hidden origin-left shrink-0 hidden md:block"
-                        variants={{
-                            initial: { width: 0, opacity: 0, marginLeft: 0 },
-                            hover: { width: 140, opacity: 1, marginLeft: 24 }
-                        }}
-                        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                        <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
-                    </motion.div>
+            <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between px-4 md:px-8 py-8 md:py-12 transition-colors duration-500 group-hover:text-white">
+                <div className="flex flex-col md:w-2/3 relative z-30 pointer-events-none">
+                    <p className="text-sm font-medium mb-2 opacity-80 uppercase tracking-widest">{event.category} • {event.dateFormatted}</p>
+                    <div className="flex items-center">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight font-serif italic tracking-tight shrink-0 max-w-full pb-2">{event.title}</h2>
+                        <motion.div
+                            className="h-16 md:h-20 rounded-lg overflow-hidden origin-left shrink-0 hidden md:block"
+                            variants={{
+                                initial: { width: 0, opacity: 0, marginLeft: 0 },
+                                hover: { width: 140, opacity: 1, marginLeft: 24 }
+                            }}
+                            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                            <img src={event.image} alt={event.title} className="w-[140px] h-full object-cover rounded-xl" />
+                        </motion.div>
+                    </div>
                 </div>
 
-                <div className="hidden md:block col-span-2 pb-1 relative z-20">
-                    <p className="text-lg font-medium">{event.category}</p>
-                </div>
-
-                <div className="hidden md:block col-span-2 pb-1 text-right relative z-20">
-                    <p className="text-lg font-medium">{event.dateFormatted}</p>
-                </div>
-
-                <div className="col-span-4 md:col-span-2 pb-1 flex flex-col items-end relative z-20">
-                    <p className="text-sm sm:text-lg font-medium md:hidden text-right">{event.dateFormatted}</p>
+                <div className="md:w-1/3 flex flex-col md:items-end mt-4 md:mt-0 relative z-30 pointer-events-none">
                     <span className="font-semibold mb-1 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">Ubicación</span>
-                    <span className="text-sm md:text-lg font-medium leading-tight text-right hidden md:block group-hover:text-white/80">{event.location}</span>
+                    <span className="text-sm md:text-lg font-medium leading-tight md:text-right hidden md:block group-hover:text-white/80">{event.location}</span>
+                </div>
+
+                {/* Mobile Image (Always visible on mobile, hidden on desktop since desktop has the sliding animation) */}
+                <div className="mt-6 md:hidden w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-primary/20 pointer-events-none">
+                    <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
                 </div>
             </div>
         </motion.div>

@@ -16,10 +16,10 @@ export default function Footer() {
           {/* Menu */}
           <div className="md:col-span-3 flex flex-col gap-4">
             <h4 className="text-white/50 text-sm font-medium mb-2 uppercase tracking-widest">Menú</h4>
-            <a href="#" className="text-xl hover:text-white/70 transition-colors">Inicio</a>
-            <a href="#que-esperar" className="text-xl hover:text-white/70 transition-colors">Visítanos</a>
-            <a href="#equipo" className="text-xl hover:text-white/70 transition-colors">Conócenos</a>
-            <a href="#eventos" className="text-xl hover:text-white/70 transition-colors">Eventos</a>
+            <a href="/" className="text-xl hover:text-white/70 transition-colors">Inicio</a>
+            <a href="/#que-esperar" className="text-xl hover:text-white/70 transition-colors">Visítanos</a>
+            <a href="/#equipo" className="text-xl hover:text-white/70 transition-colors">Conócenos</a>
+            <a href="/#eventos" className="text-xl hover:text-white/70 transition-colors">Eventos</a>
           </div>
 
           {/* Socials */}
