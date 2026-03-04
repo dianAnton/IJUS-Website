@@ -105,7 +105,7 @@ export default function SelectedWork() {
               />
 
               {/* Title & Inline Image */}
-              <div className="flex items-center justify-center relative z-30 px-32 max-w-full">
+              <div className="flex items-center justify-center relative z-30 px-24 lg:px-40 xl:px-48 max-w-full">
                 <motion.h3
                   variants={{
                     initial: { scale: 1 },
@@ -123,7 +123,7 @@ export default function SelectedWork() {
                     hover: { width: 'var(--hover-img-w, 180px)', opacity: 1, marginLeft: 'var(--hover-img-ml, 1.5rem)' }
                   }}
                   transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="overflow-hidden rounded-xl flex-shrink-0 lg:[--hover-img-w:160px] xl:[--hover-img-w:220px] lg:[--hover-img-ml:1.5rem] xl:[--hover-img-ml:2rem]"
+                  className="overflow-hidden rounded-xl flex-shrink-0 lg:[--hover-img-w:120px] xl:[--hover-img-w:180px] lg:[--hover-img-ml:1.5rem] xl:[--hover-img-ml:2rem]"
                 >
                   <motion.img
                     variants={{
@@ -133,7 +133,7 @@ export default function SelectedWork() {
                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                     src={event.image}
                     alt={event.title}
-                    className="w-[var(--hover-img-w,180px)] h-[100px] xl:h-[140px] object-cover rounded-xl max-w-none shadow-2xl"
+                    className="w-[var(--hover-img-w,180px)] h-[80px] xl:h-[120px] object-cover rounded-xl max-w-none shadow-2xl"
                     referrerPolicy="no-referrer"
                   />
                 </motion.div>
