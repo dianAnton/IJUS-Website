@@ -44,7 +44,7 @@ export const Navbar = () => {
           <div className="hidden lg:flex gap-8 items-center font-medium text-sm uppercase tracking-widest flex-1">
             <a href="/#que-esperar"><HoverText>Visítanos</HoverText></a>
             <a href="/#equipo"><HoverText>Conócenos</HoverText></a>
-            <a href="/#eventos"><HoverText>Eventos</HoverText></a>
+            <a href="/#informacion"><HoverText>Información</HoverText></a>
           </div>
 
           <a href="/" className="font-serif italic text-3xl font-bold tracking-wider flex-shrink-0 text-center relative z-50">
@@ -112,14 +112,14 @@ export const Navbar = () => {
                 Conócenos
               </motion.a>
               <motion.a
-                href="/#eventos"
+                href="/#informacion"
                 onClick={toggleMenu}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
                 className="hover:text-primary transition-colors"
               >
-                Eventos
+                Información
               </motion.a>
 
               <motion.a

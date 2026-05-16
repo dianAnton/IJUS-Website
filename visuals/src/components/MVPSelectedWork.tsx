@@ -5,72 +5,101 @@ import { Link } from 'react-router-dom';
 
 export default function SelectedWork() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [events, setEvents] = useState<any[]>([]);
+  const [items, setItems] = useState<any[]>([]);
 
   useEffect(() => {
-    async function fetchEvents() {
-      const { data, error } = await supabase
+    async function fetchItems() {
+      // Fetch latest events
+      const { data: eventsData, error: eventsError } = await supabase
         .from('event')
         .select('*')
-        .order('date', { ascending: true })
+        .order('date', { ascending: false })
         .limit(3);
 
-      if (error) {
-        console.error('Error fetching events:', error);
-      } else {
-        if (data && data.length > 0) {
-          const formattedEvents = data.map((evt: any) => {
-            const d = new Date(evt.date);
-            const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      // If we don't have enough events, fetch some notices
+      let noticesData: any[] = [];
+      if (!eventsData || eventsData.length < 3) {
+        const limit = 3 - (eventsData?.length || 0);
+        const { data: nData } = await supabase
+          .from('notice')
+          .select('*')
+          .order('published_at', { ascending: false })
+          .limit(limit);
+        if (nData) noticesData = nData;
+      }
 
-            return {
-              id: evt.id,
-              title: evt.title,
-              category: days[d.getDay()],
-              year: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              image: evt.image_url || '/ijus-noticias-eventos-placeholder.png'
-            };
-          });
-          setEvents(formattedEvents);
-        } else {
-          // Fallback placeholders si la BD está vacía
-          setEvents([
-            {
-              id: 1,
-              title: 'Próximamente',
-              category: 'Por definir',
-              year: 'Por definir',
-              image: '/ijus-noticias-eventos-placeholder.png',
-            },
-            {
-              id: 2,
-              title: 'Próximamente',
-              category: 'Por definir',
-              year: 'Por definir',
-              image: '/ijus-noticias-eventos-placeholder.png',
-            },
-            {
-              id: 3,
-              title: 'Próximamente',
-              category: 'Por definir',
-              year: 'Por definir',
-              image: '/ijus-noticias-eventos-placeholder.png',
-            }
-          ]);
-        }
+      if (eventsError) {
+        console.error('Error fetching items:', eventsError);
+      }
+
+      let combined = [];
+      
+      if (eventsData) {
+        combined.push(...eventsData.map((evt: any) => {
+          const d = new Date(evt.date);
+          const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+          return {
+            id: `evt-${evt.id}`,
+            title: evt.title,
+            category: 'Evento',
+            meta: `${days[d.getDay()]} - ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+            image: evt.image_url || '/ijus-noticias-eventos-placeholder.png'
+          };
+        }));
+      }
+
+      if (noticesData) {
+        combined.push(...noticesData.map((not: any) => {
+          return {
+            id: `not-${not.id}`,
+            title: not.title,
+            category: not.type === 'info' ? 'Información' : 'Noticia',
+            meta: 'Actualidad',
+            image: not.image_url || '/ijus-noticias-eventos-placeholder.png'
+          };
+        }));
+      }
+
+      if (combined.length > 0) {
+        setItems(combined);
+      } else {
+        // Fallback placeholders si la BD está vacía
+        setItems([
+          {
+            id: '1',
+            title: 'Próximamente',
+            category: 'Novedades',
+            meta: 'Por definir',
+            image: '/ijus-noticias-eventos-placeholder.png',
+          },
+          {
+            id: '2',
+            title: 'Próximamente',
+            category: 'Novedades',
+            meta: 'Por definir',
+            image: '/ijus-noticias-eventos-placeholder.png',
+          },
+          {
+            id: '3',
+            title: 'Próximamente',
+            category: 'Novedades',
+            meta: 'Por definir',
+            image: '/ijus-noticias-eventos-placeholder.png',
+          }
+        ]);
       }
     }
 
-    fetchEvents();
+    fetchItems();
   }, []);
 
   return (
-    <section className="bg-primary text-white py-24 px-6 md:px-12 w-full min-h-screen font-sans overflow-hidden" id="eventos">
+    <section className="bg-primary text-white py-24 px-6 md:px-12 w-full min-h-screen font-sans overflow-hidden" id="informacion">
       <div className="max-w-[120rem] mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-start justify-between mb-24 gap-8">
           <h2 className="text-5xl md:text-[4.5rem] font-medium tracking-tight flex items-start">
-            Eventos y Noticias
+            Información y Eventos
           </h2>
           <p className="text-xl md:text-2xl max-w-xl opacity-90 leading-snug font-light md:mt-4">
             Mantente informado sobre lo que sucede en nuestra casa. Te invitamos a ser parte de todas nuestras actividades.
@@ -79,14 +108,14 @@ export default function SelectedWork() {
 
         {/* Desktop List */}
         <div className="hidden md:block border-b border-light/20">
-          {events.map((event) => (
+          {items.map((item) => (
             <motion.a
-              href={`#evento-${event.id}`}
+              href={`#${item.id}`}
               onClick={(e) => {
                 e.preventDefault();
-                setSelectedImage(event.image);
+                setSelectedImage(item.image);
               }}
-              key={event.id}
+              key={item.id}
               initial="initial"
               whileHover="hover"
               variants={{
@@ -115,7 +144,7 @@ export default function SelectedWork() {
                   transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                   className="text-4xl lg:text-5xl xl:text-6xl leading-tight font-serif italic tracking-tight whitespace-nowrap truncate pb-2"
                 >
-                  {event.title}
+                  {item.title}
                 </motion.h3>
 
                 <motion.div
@@ -132,8 +161,8 @@ export default function SelectedWork() {
                       hover: { scale: 1 }
                     }}
                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    src={event.image}
-                    alt={event.title}
+                    src={item.image}
+                    alt={item.title}
                     className="w-[var(--hover-img-w,180px)] h-[80px] xl:h-[120px] object-cover rounded-xl max-w-none shadow-2xl"
                     referrerPolicy="no-referrer"
                   />
@@ -142,10 +171,10 @@ export default function SelectedWork() {
 
               {/* Meta info (Category, Year) - absolutely positioned on the sides */}
               <div className="absolute left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 font-sans text-xl font-light z-40">
-                {event.category}
+                {item.category}
               </div>
               <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 font-sans text-xl font-light text-right z-40">
-                {event.year}
+                {item.meta}
               </div>
             </motion.a>
           ))}
@@ -153,30 +182,30 @@ export default function SelectedWork() {
 
         {/* Mobile List */}
         <div className="md:hidden flex flex-col">
-          {events.map((event) => (
+          {items.map((item) => (
             <a
-              href={`#evento-${event.id}`}
+              href={`#${item.id}`}
               onClick={(e) => {
                 e.preventDefault();
-                setSelectedImage(event.image);
+                setSelectedImage(item.image);
               }}
-              key={event.id}
+              key={item.id}
               className="flex flex-col py-10 border-t border-light/20 group relative overflow-hidden"
             >
               {/* Mobile Animacion Blanca */}
               <div className="absolute inset-0 bg-white origin-bottom scale-y-0 group-hover:scale-y-100 transition-transform duration-500 ease-out -z-10" />
 
               <div className="flex flex-col items-center justify-center mb-8 text-center group-hover:text-primary transition-colors duration-500 px-4">
-                <h3 className="text-3xl sm:text-4xl leading-tight font-serif italic tracking-tight break-words hyphens-auto pb-2">{event.title}</h3>
+                <h3 className="text-3xl sm:text-4xl leading-tight font-serif italic tracking-tight break-words hyphens-auto pb-2">{item.title}</h3>
                 <span className="text-xs opacity-70 uppercase tracking-widest mt-4">
-                  {event.category} - {event.year}
+                  {item.category} - {item.meta}
                 </span>
               </div>
 
               <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-xl">
                 <img
-                  src={event.image}
-                  alt={event.title}
+                  src={item.image}
+                  alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   referrerPolicy="no-referrer"
                 />

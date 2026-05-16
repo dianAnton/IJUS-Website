@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../lib/supabase';
+import { Calendar, FileText, Info } from 'lucide-react';
 
 const RevealText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
     return (
@@ -17,13 +18,13 @@ const RevealText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
     );
 };
 
-const ProjectItem: React.FC<{ event: any, onSelectImage: (img: string) => void }> = ({ event, onSelectImage }) => {
+const ContentItem: React.FC<{ item: any, onSelectImage: (img: string) => void }> = ({ item, onSelectImage }) => {
     return (
         <motion.div
             className="group relative cursor-pointer border-b md:border-none border-primary/20 md:border-transparent pb-8 md:pb-0"
             initial="initial"
             whileHover="hover"
-            onClick={() => onSelectImage(event.image)}
+            onClick={() => onSelectImage(item.image)}
         >
             {/* Top Border Line */}
             <motion.div
@@ -47,9 +48,11 @@ const ProjectItem: React.FC<{ event: any, onSelectImage: (img: string) => void }
 
             <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between px-4 md:px-8 py-8 md:py-12 transition-colors duration-500 group-hover:text-white">
                 <div className="flex flex-col md:w-2/3 relative z-30 pointer-events-none">
-                    <p className="text-sm font-medium mb-2 opacity-80 uppercase tracking-widest">{event.category} • {event.dateFormatted}</p>
+                    <p className="text-sm font-medium mb-2 opacity-80 uppercase tracking-widest">{item.category} {item.dateFormatted ? `• ${item.dateFormatted}` : ''}</p>
                     <div className="flex items-center">
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight font-serif italic tracking-tight shrink-0 max-w-full pb-2">{event.title}</h2>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight font-serif italic tracking-tight shrink-0 max-w-full pb-2 break-words whitespace-normal md:whitespace-nowrap md:truncate">
+                            {item.title}
+                        </h2>
                         <motion.div
                             className="h-16 md:h-20 rounded-lg overflow-hidden origin-left shrink-0 hidden md:block"
                             variants={{
@@ -58,19 +61,27 @@ const ProjectItem: React.FC<{ event: any, onSelectImage: (img: string) => void }
                             }}
                             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                         >
-                            <img src={event.image} alt={event.title} className="w-[140px] h-full object-cover rounded-xl" />
+                            <img src={item.image} alt={item.title} className="w-[140px] h-full object-cover rounded-xl" />
                         </motion.div>
                     </div>
                 </div>
 
                 <div className="md:w-1/3 flex flex-col md:items-end mt-4 md:mt-0 relative z-30 pointer-events-none">
-                    <span className="font-semibold mb-1 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">Ubicación</span>
-                    <span className="text-sm md:text-lg font-medium leading-tight md:text-right hidden md:block group-hover:text-white/80">{event.location}</span>
+                    {item.location ? (
+                        <>
+                            <span className="font-semibold mb-1 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">Ubicación</span>
+                            <span className="text-sm md:text-lg font-medium leading-tight md:text-right hidden md:block group-hover:text-white/80">{item.location}</span>
+                        </>
+                    ) : (
+                        <span className="text-sm md:text-lg font-light leading-snug md:text-right hidden md:block opacity-0 group-hover:opacity-100 transition-opacity duration-500 max-w-sm">
+                            {item.description ? (item.description.length > 80 ? item.description.substring(0, 80) + '...' : item.description) : ''}
+                        </span>
+                    )}
                 </div>
 
-                {/* Mobile Image (Always visible on mobile, hidden on desktop since desktop has the sliding animation) */}
+                {/* Mobile Image */}
                 <div className="mt-6 md:hidden w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-primary/20 pointer-events-none">
-                    <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                 </div>
             </div>
         </motion.div>
@@ -78,47 +89,81 @@ const ProjectItem: React.FC<{ event: any, onSelectImage: (img: string) => void }
 };
 
 export default function Novedades() {
-    const [events, setEvents] = useState<any[]>([]);
+    const [allItems, setAllItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [activeFilter, setActiveFilter] = useState<'todos' | 'evento' | 'noticia' | 'info'>('todos');
 
     useLayoutEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
     useEffect(() => {
-        async function fetchEvents() {
-            const { data, error } = await supabase
+        async function fetchData() {
+            setLoading(true);
+            const { data: eventsData, error: eventsError } = await supabase
                 .from('event')
                 .select('*')
                 .order('date', { ascending: true });
 
-            if (error) {
-                console.error('Error fetching events:', error);
-            } else {
-                if (data && data.length > 0) {
-                    const formattedEvents = data.map((evt: any) => {
-                        const d = new Date(evt.date);
-                        const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-                        const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const { data: noticeData, error: noticeError } = await supabase
+                .from('notice')
+                .select('*')
+                .order('published_at', { ascending: false });
 
-                        return {
-                            id: evt.id,
-                            title: evt.title,
-                            category: days[d.getDay()],
-                            dateFormatted: `${d.getDate()} ${months[d.getMonth()]} - ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-                            location: evt.location || 'Constantino 104',
-                            image: evt.image_url || '/ijus-noticias-eventos-placeholder.png'
-                        };
-                    });
-                    setEvents(formattedEvents);
-                }
+            let combined = [];
+
+            if (!eventsError && eventsData) {
+                combined.push(...eventsData.map(evt => {
+                    const d = new Date(evt.date);
+                    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                    
+                    return {
+                        id: `evt-${evt.id}`,
+                        type: 'evento',
+                        category: 'Evento',
+                        title: evt.title,
+                        dateFormatted: `${d.getDate()} ${months[d.getMonth()]} - ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+                        location: evt.location || 'Constantino 104',
+                        description: evt.description,
+                        image: evt.image_url || '/ijus-noticias-eventos-placeholder.png',
+                        sortDate: d.getTime()
+                    };
+                }));
             }
+
+            if (!noticeError && noticeData) {
+                combined.push(...noticeData.map(not => {
+                    const d = new Date(not.published_at);
+                    const isNews = not.type === 'news';
+                    return {
+                        id: `not-${not.id}`,
+                        type: isNews ? 'noticia' : 'info',
+                        category: isNews ? 'Noticia' : 'Información',
+                        title: not.title,
+                        dateFormatted: '',
+                        location: '',
+                        description: not.content,
+                        image: not.image_url || '/ijus-noticias-eventos-placeholder.png',
+                        sortDate: d.getTime()
+                    };
+                }));
+            }
+
+            // Sort: Upcoming events first, then newest notices/info
+            combined.sort((a, b) => b.sortDate - a.sortDate);
+
+            setAllItems(combined);
             setLoading(false);
         }
 
-        fetchEvents();
+        fetchData();
     }, []);
+
+    const filteredItems = activeFilter === 'todos' 
+        ? allItems 
+        : allItems.filter(item => item.type === activeFilter);
 
     return (
         <div className="min-h-screen bg-light text-dark font-sans selection:bg-primary selection:text-white pt-32">
@@ -131,10 +176,10 @@ export default function Novedades() {
             />
 
             <main className="pb-20">
-                <section className="px-6 md:px-12 mb-20 md:mb-32 max-w-[120rem] mx-auto">
+                <section className="px-6 md:px-12 mb-12 max-w-[120rem] mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
                         <div className="md:col-span-8 flex flex-col items-start gap-4">
-                            <span className="text-primary font-semibold uppercase tracking-widest text-sm">Calendario General</span>
+                            <span className="text-primary font-semibold uppercase tracking-widest text-sm">Portal de Información</span>
                             <h1 className="text-6xl md:text-[8rem] leading-[0.9] font-medium tracking-tighter">
                                 <RevealText text="Novedades" delay={0.4} />
                             </h1>
@@ -146,26 +191,62 @@ export default function Novedades() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.8, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
                             >
-                                Explora el plan completo para los próximos meses. Todas las vigilias, estudios bíblicos, reuniones de jóvenes y eventos especiales de nuestra iglesia en un solo lugar.
-                                <br /><br />
-                                Jesucristo Único Salvador.
+                                Descubre los próximos eventos, noticias de actualidad y recursos importantes para nuestra comunidad.
                             </motion.p>
                         </div>
                     </div>
                 </section>
 
+                {/* Filter Tabs */}
+                <section className="px-6 md:px-12 mb-16 max-w-[120rem] mx-auto flex justify-center">
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 1 }}
+                        className="flex flex-nowrap md:flex-wrap gap-2 p-1.5 bg-white/50 backdrop-blur-md rounded-xl md:rounded-lg w-full md:w-max border border-dark/5 overflow-x-auto snap-x hide-scrollbar"
+                    >
+                        <button
+                            onClick={() => setActiveFilter('todos')}
+                            className={`flex-shrink-0 snap-center px-6 md:px-8 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all ${activeFilter === 'todos' ? 'bg-primary text-white shadow-md' : 'text-dark/60 hover:text-dark hover:bg-white'}`}
+                        >
+                            Ver Todo
+                        </button>
+                        <button
+                            onClick={() => setActiveFilter('evento')}
+                            className={`flex-shrink-0 snap-center flex items-center gap-2 px-6 md:px-8 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all ${activeFilter === 'evento' ? 'bg-primary text-white shadow-md' : 'text-dark/60 hover:text-dark hover:bg-white'}`}
+                        >
+                            <Calendar className="w-4 h-4" />
+                            Eventos
+                        </button>
+                        <button
+                            onClick={() => setActiveFilter('noticia')}
+                            className={`flex-shrink-0 snap-center flex items-center gap-2 px-6 md:px-8 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all ${activeFilter === 'noticia' ? 'bg-primary text-white shadow-md' : 'text-dark/60 hover:text-dark hover:bg-white'}`}
+                        >
+                            <FileText className="w-4 h-4" />
+                            Noticias
+                        </button>
+                        <button
+                            onClick={() => setActiveFilter('info')}
+                            className={`flex-shrink-0 snap-center flex items-center gap-2 px-6 md:px-8 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all ${activeFilter === 'info' ? 'bg-primary text-white shadow-md' : 'text-dark/60 hover:text-dark hover:bg-white'}`}
+                        >
+                            <Info className="w-4 h-4" />
+                            Información
+                        </button>
+                    </motion.div>
+                </section>
+
                 <section className="flex flex-col max-w-[120rem] mx-auto">
-                    {events.length > 0 ? events.map((event, index) => (
-                        <ProjectItem key={index} event={event} onSelectImage={setSelectedImage} />
+                    {filteredItems.length > 0 ? filteredItems.map((item, index) => (
+                        <ContentItem key={item.id} item={item} onSelectImage={setSelectedImage} />
                     )) : (
                         !loading && (
                             <div className="py-20 text-center text-dark/50 font-light">
-                                Aún no hay eventos programados. Vuelve pronto.
+                                No hay elementos en esta categoría por el momento.
                             </div>
                         )
                     )}
                     {/* Bottom border for the last item */}
-                    {events.length > 0 && (
+                    {filteredItems.length > 0 && (
                         <motion.div
                             className="h-[1px] bg-primary/20 w-full"
                             initial={{ scaleX: 0 }}
@@ -193,10 +274,9 @@ export default function Novedades() {
                                 exit={{ scale: 0.9, opacity: 0 }}
                                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
                                 src={selectedImage}
-                                alt="Evento Expandido"
+                                alt="Expandido"
                                 className="max-w-full max-h-full rounded-2xl shadow-2xl object-contain"
                             />
-                            {/* Close button */}
                             <button className="absolute top-6 right-6 text-white bg-black/40 hover:bg-black/80 rounded-full p-3 backdrop-blur-sm transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>

@@ -11,7 +11,7 @@ export const VisitModal = () => {
 
     const [formData, setFormData] = useState({
         name: '',
-        contact_method: 'email' as 'email',
+        contact_method: 'email' as 'email' | 'whatsapp',
         contact_value: ''
     });
 
@@ -134,16 +134,39 @@ export const VisitModal = () => {
                                         />
                                     </div>
 
+                                    {/* Contact Method Selector */}
+                                    <div className="flex flex-col gap-1.5 mt-2">
+                                        <label className="text-xs font-semibold uppercase tracking-widest text-dark/70 ml-1">
+                                            Quiero ser contactado por
+                                        </label>
+                                        <div className="flex bg-light/50 border border-dark/10 rounded-xl p-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, contact_method: 'email', contact_value: '' })}
+                                                className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${formData.contact_method === 'email' ? 'bg-white shadow-sm text-primary' : 'text-dark/50 hover:text-dark'}`}
+                                            >
+                                                Email
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, contact_method: 'whatsapp', contact_value: '' })}
+                                                className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${formData.contact_method === 'whatsapp' ? 'bg-white shadow-sm text-primary' : 'text-dark/50 hover:text-dark'}`}
+                                            >
+                                                WhatsApp
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     {/* Contact Value Input */}
-                                    <div className="flex flex-col gap-1.5">
+                                    <div className="flex flex-col gap-1.5 mt-2">
                                         <label htmlFor="contact_value" className="text-xs font-semibold uppercase tracking-widest text-dark/70 ml-1">
-                                            Correo Electrónico
+                                            {formData.contact_method === 'email' ? 'Correo Electrónico' : 'Número de WhatsApp'}
                                         </label>
                                         <input
-                                            type="email"
+                                            type={formData.contact_method === 'email' ? 'email' : 'tel'}
                                             id="contact_value"
                                             required
-                                            placeholder="ejemplo@correo.com"
+                                            placeholder={formData.contact_method === 'email' ? 'ejemplo@correo.com' : '+56 9 1234 5678'}
                                             className="w-full bg-light/50 border border-dark/10 rounded-xl px-4 py-3 text-dark focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-dark/30"
                                             value={formData.contact_value}
                                             onChange={(e) => setFormData({ ...formData, contact_value: e.target.value })}
