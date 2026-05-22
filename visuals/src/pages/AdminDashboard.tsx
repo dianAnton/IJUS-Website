@@ -12,7 +12,11 @@ export default function AdminDashboard() {
         return saved === 'true';
     });
 
-    const userName = user?.email === 'diegoas1909@gmail.com' ? 'Diego Anton' : user?.email;
+    const userName = user?.email === 'diegoas1909@gmail.com'
+        ? 'Diego Anton'
+        : user?.email === 'luisdonosog12@gmail.com'
+            ? 'Luis Donoso'
+            : user?.email;
 
     useEffect(() => {
         localStorage.setItem('adminDarkMode', isDarkMode.toString());
